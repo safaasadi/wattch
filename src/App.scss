@@ -1,0 +1,27 @@
+:root {
+  --teal: #BACDD9;
+  --cyan: #78A4BF;
+  --darkblue: #1C618C;
+  --orange: #F2AA6B;
+  --yellow: #F2C46D;
+}
+
+.container {
+  padding: 50px;
+}
+
+.navbar {
+  flex-grow: 1;
+
+  .MuiAppBar-colorPrimary {
+    background-color: var(--darkblue);
+  }
+
+  .menu-button {
+    margin-right: 2rem;
+  }
+
+  .title {
+    flex-grow: 1;
+  }
+}
