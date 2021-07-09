@@ -10,18 +10,65 @@
   padding: 50px;
 }
 
+@media only screen
+and (min-device-width: 320px)
+and (max-device-width: 480px)
+and (-webkit-min-device-pixel-ratio: 2)
+and (orientation: portrait) {
+  .container {
+    padding: 10px;
+  }
+}
+
 .navbar {
   flex-grow: 1;
 
-  .MuiAppBar-colorPrimary {
-    background-color: var(--darkblue);
+  header.DhHCwgUy {
+    background-color: var(--darkblue) !important;
+  }
+
+  header.swwe8FB {
+    background-color: var(--yellow) !important;
+  }
+
+  header.xoDk1WR {
+    background-color: var(--orange) !important;
   }
 
   .menu-button {
     margin-right: 2rem;
+    color: black;
   }
 
   .title {
     flex-grow: 1;
+  }
+
+  img {
+    height: 6rem;
+    margin-top: -3rem;
+    margin-left: -3rem;
+    position: absolute;
+  }
+}
+
+.site-data {
+
+  h3 {
+    text-decoration: underline;
+  }
+
+  .MuiAccordionSummary-root {
+    border-bottom: 1px solid lightgray;
+  }
+
+  @media only screen
+  and (min-device-width: 320px)
+  and (max-device-width: 480px)
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: portrait) {
+    h1 {
+      font-size: 22px;
+    }
   }
 }
