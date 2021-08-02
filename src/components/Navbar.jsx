@@ -20,7 +20,7 @@ const Navbar = React.memo(props => {
 
     useEffect(() => {
         getNavbarColor()
-    }, [siteName, navbarColor, ])
+    }, [siteName, navbarColor, window.location.href])
 
     const openMenu = () => {
         props.modifyOpenNav(true)
