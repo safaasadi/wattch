@@ -8,14 +8,22 @@ import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Sunny from '../backgrounds/sunny.jpg';
+import ClearNight from '../backgrounds/clear night.jpg';
+import Cloudy from '../backgrounds/cloudy.jpg';
+import CloudyNight from '../backgrounds/cloudy.png';
+import Windy from '../backgrounds/windy.jpg';
+import Fog from '../backgrounds/fog.jpg';
 
 const Site = props => {
-
+    
     const validSiteIds = ['DhHCwgUy', '1swwe8FB', '5xoDk1WR']
     const [validSite, setValidSite] = useState(true)
     const [siteInfo, setSiteInfo] = useState(null)
     const [siteData, setSiteData] = useState(null)
     const {site_id} = props?.match.params;
+    const [weatherIcon, setWeatherIcon] = useState("");
+    const [bodyColor, setBodyColor] = useState("");
 
     useEffect(() => {
         if (!validSiteIds.includes(site_id)) {
@@ -25,7 +33,7 @@ const Site = props => {
         setValidSite(true)
         getSiteInfo()
         refreshLiveData()
-    }, [site_id])
+    }, [site_id, weatherIcon])
 
     const getSiteInfo = async () => {
         try {
@@ -33,8 +41,7 @@ const Site = props => {
             let {data: site_data} = await axios.get(`https://kiosk.staging.wattch.io/api/${site_id}/data`)
             setSiteInfo(site_info)
             setSiteData(site_data)
-
-            console.log(site_data)
+            getWeatherIcon()
         } catch (err) {
             console.log(err)
         }
@@ -75,80 +82,108 @@ const Site = props => {
     const getAllTimeKWH = () => {
         return siteData?.energy?.production?.allTime?.value / 1000
     }
-
     const getWeatherIcon = () => {
-        switch (siteData?.meteo?.icon) {
-            case "clear-day":
-            case "clear-night":
-            case "rain":
-            case "snow":
-            case "sleet":
-            case "wind":
-            case "fog":
-            case "cloudy":
-            case "partly-cloudy-day":
-            case "partly-cloudy-night":
+        switch (siteData?.meteo?.icon?.value) {
+            case "clear-day": {
+                setWeatherIcon(Sunny);
+                break;
+            }
+            case "clear-night": {
+                setWeatherIcon(ClearNight);
+                break;
+            }
+            case "rain": {
+                setWeatherIcon(Cloudy);
+                break;
+            }
+            case "snow": {
+                setWeatherIcon(ClearNight);
+                break
+            }
+            case "sleet": {
+                setWeatherIcon(Cloudy);
+                break
+            }
+            case "wind": {
+                setWeatherIcon(Windy);
+                break
+            }
+            case "fog": {
+                setWeatherIcon(Fog);
+                break
+            }
+            case "cloudy": {
+                setWeatherIcon(Cloudy);
+                break;
+            }
+            case "partly-cloudy-day": {
+                setWeatherIcon(Cloudy);
+                break;
+            }
+            case "partly-cloudy-night": {
+                setWeatherIcon(CloudyNight);
+                break;
+            }
+            default: {
+                setWeatherIcon(Sunny);
+            }
         }
     }
 
     if (!validSite) return <InvalidSite/>
 
     return (
-        <div className="site-data">
-            <div style={{textAlign: 'center', paddingBottom: '2rem'}}>
-                <h1>{`${siteInfo?.name}`}</h1>
-                <h4>{`Capacity: ${parseInt(siteInfo?.capacity) / 1000} kW`}</h4>
+        <>
+        <div className="site-title">
+            <div className={`bg site${validSiteIds.indexOf(site_id)}`}>
+                <div className="overlay">
+                    <h1>{`${siteInfo?.name}`}</h1>
+                    <h4>{`Capacity: ${parseInt(siteInfo?.capacity) / 1000} kW`}</h4>
+                </div>
             </div>
-
-            <Accordion>
-                <AccordionSummary
-                    expandIcon={<ExpandMoreIcon/>}
-                    aria-controls="panel1a-content"
-                    id="panel1a-header"
-                >
-                    <Typography className="heading">Current Site Data</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                    <Typography>
-                        <h4>{`Power Production: ${addCommas(siteData?.power?.production?.value)} W`}</h4>
-                        <h4>{`Temperature: ${parseInt(toFahrenheit(siteData?.meteo?.temperature?.value))} F`}</h4>
-                        <h4>{`Cloud Coverage: ${parseInt(siteData?.meteo?.cloudCover?.value * 100)}%`}</h4>
-                    </Typography>
-                </AccordionDetails>
-            </Accordion>
-            <Accordion>
-                <AccordionSummary
-                    expandIcon={<ExpandMoreIcon/>}
-                    aria-controls="panel2a-content"
-                    id="panel2a-header"
-                >
-                    <Typography className="heading">Energy Production</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                    <Typography>
-                    <h4>{`Today: ${addCommas(parseInt(getEnergyProducedToday()?.value))} W`}</h4>
-                    <h4>{`All Time: ${addCommas(parseInt(getAllTimeKWH()))} kWh`}</h4>
-                    </Typography>
-                </AccordionDetails>
-            </Accordion>
-            <Accordion>
-                <AccordionSummary
-                    expandIcon={<ExpandMoreIcon/>}
-                    aria-controls="panel3a-content"
-                    id="panel3a-header"
-                >
-                    <Typography className="heading">Sustainability</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                    <Typography>
-                    <h4>{`CO2 emissions saved from smartphones being charged: ${addCommas(parseInt((getAllTimeKWH() / 1000) * 86206))}`}</h4>
-                    <h4>{`CO2 emissions saved from pounds of coal burned: ${addCommas(parseInt((getAllTimeKWH() / 1000) * 783))}`}</h4>
-                    <h4>{`Greenhouse gas emissions saved from miles driven by an average passenger vehicle: ${addCommas(parseInt((getAllTimeKWH() / 1000) * 1781))}`}</h4>
-                    </Typography>
-                </AccordionDetails>
-            </Accordion>
-
         </div>
+
+        <div className={`site-data ${props.siteColor}`}>
+
+            <div className="property-card">
+                <div className="property-image" style={{ backgroundImage: `url("${weatherIcon}")` }}></div>
+                    <div className="property-description">
+                        <Typography className="heading">Current Site Data</Typography>
+                
+                        <Typography>
+                            <h4>{`Power Production: ${addCommas(siteData?.power?.production?.value)} W`}</h4>
+                            <h4>{`Temperature: ${parseInt(toFahrenheit(siteData?.meteo?.temperature?.value))} F`}</h4>
+                            <h4>{`Cloud Coverage: ${parseInt(siteData?.meteo?.cloudCover?.value * 100)}%`}</h4>
+                        </Typography>
+                    </div>
+            </div>
+            
+            <div className="property-card">
+                <div className="property-image" style={{ backgroundImage: `url("${weatherIcon}")` }}></div>
+                    <div className="property-description">
+                        <Typography className="heading">Energy Production</Typography>
+                
+                        <Typography>
+                        <h4>{`Today: ${addCommas(parseInt(getEnergyProducedToday()?.value) / 1000)} kWh`}</h4>
+                        <h4>{`All Time: ${addCommas(parseInt(getAllTimeKWH()))} kWh`}</h4>
+                        </Typography>
+                    </div>
+            </div>
+            
+            <div className="property-card">
+                <div className="property-image" style={{ backgroundImage: `url("${weatherIcon}")` }}></div>
+                    <div className="property-description">
+                        <Typography className="heading">Sustainability</Typography>
+            
+                        <Typography>
+                        <h4>{`CO2 emissions saved from smartphones being charged: ${addCommas(parseInt((getAllTimeKWH() / 1000) * 86206))}`}</h4>
+                        <h4>{`CO2 emissions saved from pounds of coal burned: ${addCommas(parseInt((getAllTimeKWH() / 1000) * 783))}`}</h4>
+                        <h4>{`Greenhouse gas emissions saved from miles driven by an average passenger vehicle: ${addCommas(parseInt((getAllTimeKWH() / 1000) * 1781))}`}</h4>
+                        </Typography>
+                    </div>
+            </div>
+        </div>
+        </>
     )
 
 }
